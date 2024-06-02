@@ -33,7 +33,7 @@
                 // Loop through each domain object and display name and tld
                 data.forEach(function(domain) {
                     var domainInfo = document.createElement("p");
-                    domainInfo.textContent = "Name: " + domain.name + ", TLD: " + domain.tld;
+                    domainInfo.textContent = "Name: " + domain.name + domain.tld;
                     resultDiv.appendChild(domainInfo);
                 });
             }

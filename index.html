@@ -11,7 +11,14 @@
             document.getElementById("doavCheck").addEventListener("click", function(event) {
                 event.preventDefault(); // Prevent form submission
                 getdomains();
+            });document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("doavCheck").addEventListener("click", function(event) {
+                event.preventDefault(); // Prevent form submission
+                newdom();
             });
+
+
+        
 
             function getdomains() {
                 axios.get('https://corsproxy.io/?https%3A%2F%2Fapi.buss.lol%2Fdomains')

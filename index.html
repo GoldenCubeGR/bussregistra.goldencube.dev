@@ -25,22 +25,6 @@
                         console.error('Error fetching data:', error);
                     });
             }
-
-            function displayData(data) {
-                const resultDiv = document.getElementById('result');
-                resultDiv.innerHTML = '';
-
-                // Assuming data is an array of domains
-                if (Array.isArray(data)) {
-                    data.forEach(domain => {
-                        const domainElement = document.createElement('p');
-                        domainElement.textContent = domain;
-                        resultDiv.appendChild(domainElement);
-                    });
-                } else {
-                    resultDiv.textContent = 'Unexpected data format';
-                }
-            }
         });
     </script>
 </head>

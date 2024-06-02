@@ -25,6 +25,18 @@
                         console.error('Error fetching data:', error);
                     });
             }
+
+            function displayData(data) {
+                var resultDiv = document.getElementById("result");
+                resultDiv.innerHTML = ""; // Clear previous results
+                
+                // Loop through each domain object and display name and tld
+                data.forEach(function(domain) {
+                    var domainInfo = document.createElement("p");
+                    domainInfo.textContent = "Name: " + domain.name + ", TLD: " + domain.tld;
+                    resultDiv.appendChild(domainInfo);
+                });
+            }
         });
     </script>
 </head>

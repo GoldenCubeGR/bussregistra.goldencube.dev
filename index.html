@@ -12,12 +12,6 @@
                 event.preventDefault(); // Prevent form submission
                 getdomains();
             });
-            
-        document.addEventListener("DOMContentLoaded", function() {
-            document.getElementById("newDom").addEventListener("click", function(event) {
-                event.preventDefault(); // Prevent form submission
-                newdom();
-            });
 
 
         
@@ -34,6 +28,25 @@
                         console.error('Error fetching data:', error);
                     });
             }
+
+            function displayData(data) {
+                var resultDiv = document.getElementById("result");
+                resultDiv.innerHTML = ""; // Clear previous results
+                
+                // Loop through each domain object and display name and tld
+                data.forEach(function(domain) {
+                    var domainInfo = document.createElement("p");
+                    domainInfo.textContent = "Name: " + domain.name + domain.tld;
+                    resultDiv.appendChild(domainInfo);
+                });
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("newDom").addEventListener("click", function(event) {
+                event.preventDefault(); // Prevent form submission
+                newdom();
+            });
 
             function newdom() {
                 const data = {
@@ -53,17 +66,6 @@
                     });
             }
 
-            function displayData(data) {
-                var resultDiv = document.getElementById("result");
-                resultDiv.innerHTML = ""; // Clear previous results
-                
-                // Loop through each domain object and display name and tld
-                data.forEach(function(domain) {
-                    var domainInfo = document.createElement("p");
-                    domainInfo.textContent = "Name: " + domain.name + domain.tld;
-                    resultDiv.appendChild(domainInfo);
-                });
-            }
         });
     </script>
 </head>

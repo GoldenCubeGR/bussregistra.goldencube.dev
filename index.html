@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <title>Domain Availability Check</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("doavCheck").addEventListener("click", function(event) {
+                event.preventDefault(); // Prevent form submission
+                getdomains();
+            });
+
+            function getdomains() {
+                axios.get('https://api.buss.lol/domains')
+                    .then(function(response) {
+                        // Handle success
+                        console.log(response.data);
+                        displayData(response.data);
+                    })
+                    .catch(function(error) {
+                        // Handle error
+                        console.error('Error fetching data:', error);
+                    });
+            }
+
+            function displayData(data) {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = '';
+
+                // Assuming data is an array of domains
+                if (Array.isArray(data)) {
+                    data.forEach(domain => {
+                        const domainElement = document.createElement('p');
+                        domainElement.textContent = domain;
+                        resultDiv.appendChild(domainElement);
+                    });
+                } else {
+                    resultDiv.textContent = 'Unexpected data format';
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+    <center>
+    <div id="doav">
+        <h1>Domain Availability Check</h1>
+        <br>
+        <form>
+            <input id="doavIn">
+            <br>
+            <br>
+            <button id="doavCheck" type="button">Check Availability</button>
+        </form>
+    </div>
+    <div id="result"></div>
+    </center>
+</body>
+</html>

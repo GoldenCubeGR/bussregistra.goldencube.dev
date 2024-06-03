@@ -42,11 +42,11 @@
             function splitDomain(domain) {
                 for (let tld of tlds) {
                     if (domain.endsWith(tld)) {
-                        const name = domain.slice(0, domain.length - tld.length);
+                        const name = domain.slice(0, domain.length - tld.length).replace(/\./g, '');
                         return [name, tld];
                     }
                 }
-                return [domain, '']; // Default return if no TLD is found
+                return [domain.replace(/\./g, ''), '']; // Default return if no TLD is found
             }
 
             function checkAvailability(name, tld) {
@@ -54,18 +54,21 @@
                     const url = `https://d6e77dfa-4c3a-40f2-b491-76e249d65b88-00-3qnnznwis8aoo.janeway.replit.dev/proxy?url=https://api.buss.lol/domain/${name}/${tld}`;
                     axios.get(url)
                         .then(function(response) {
-                            const isTaken = response.data.exists;
-                            displayResult(isTaken, `${name}${tld}`);
+                            displayResult(false, `${name}.${tld}`);
                         })
                         .catch(function(error) {
-                            console.error('Error checking domain availability:', error);
+                            if (error.response && error.response.status === 404) {
+                                displayResult(true, `${name}.${tld}`);
+                            } else {
+                                console.error('Error checking domain availability:', error);
+                            }
                         });
                 }
             }
 
-            function displayResult(isTaken, domain) {
+            function displayResult(isAvailable, domain) {
                 const resultDiv = document.getElementById("result");
-                resultDiv.innerHTML = isTaken ? `${domain} is taken.` : `${domain} is available.`;
+                resultDiv.innerHTML = isAvailable ? `${domain} is Available.` : `${domain} is Unavailable.`;
             }
 
             document.getElementById("newDom").addEventListener("click", function(event) {

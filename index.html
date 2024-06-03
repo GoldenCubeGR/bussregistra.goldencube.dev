@@ -223,49 +223,33 @@
             }
 
             function registerDomain(domain) {
-                modal.style.display = "block";
+                const proxyUrl = 'https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/domain';
 
-                span.onclick = function() {
-                modal.style.display = "none";
-                }
+                const domainData = {
+                  name: name,
+                  tld: tld,
+                  ip: 'https://goldencube.dev'
+                };
 
-                // When the user clicks anywhere outside of the modal, close it
-                window.onclick = function(event) {
-                  if (event.target == modal) {
-                    modal.style.display = "none";
-                  }
-                }
-                var email = document.getElementById("email");
-var password = document.getElementById("password");
-var signInButton = document.getElementById("signInButton");
-var signUpButton = document.getElementById("signUpButton");
-
-// Add event listeners to the sign in and sign up buttons
-signInButton.addEventListener("click", function() {
-  // Sign in the user using Firebase's signInWithEmailAndPassword method
-  firebase.auth().signInWithEmailAndPassword(email.value, password.value)
-    .then(function() {
-      // Redirect the user to the protected resources page
-      window.location.href = "/protected-resources.html";
-    })
-    .catch(function(error) {
-      // Show an error message
-      alert(error.message);
-    });
-});
-
-signUpButton.addEventListener("click", function() {
-  // Sign up the user using Firebase's createUserWithEmailAndPassword method
-  firebase.auth().createUserWithEmailAndPassword(email.value, password.value)
-    .then(function() {
-      // Redirect the user to the protected resources page
-      window.location.href = "/protected-resources.html";
-    })
-    .catch(function(error) {
-      // Show an error message
-      alert(error.message);
-    });
-});
+                    fetch(proxyUrl, {
+                    method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify(domainData)
+                    })
+                    .then(response => {
+                      if (!response.ok) {
+                        throw new Error('Failed to create domain', Error);
+                          }
+                      return response.json();
+                        })
+                        .then(data => {
+                          console.log('Domain created successfully:', data);
+                            })
+                        .catch(error => {
+                          console.error('Error creating domain:', error);
+                        });
                 alert(`Registering domain: ${domain}`);
             }
         });

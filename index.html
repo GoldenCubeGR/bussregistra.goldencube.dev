@@ -233,25 +233,17 @@
                   ip: 'https://goldencube.dev'
                 };
 
-                    fetch(proxyUrl, {
-                    method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json'
-                      },
-                      body: JSON.stringify(domainData)
-                    })
-                    .then(response => {
-                      if (!response.ok) {
-                        throw new Error('Failed to create domain', Error);
-                          }
-                      return response.json();
-                        })
-                        .then(data => {
-                          console.log('Domain created successfully:', data);
-                            })
-                        .catch(error => {
-                          console.error('Error creating domain:', error);
-                        });
+                axios.post(proxyUrl, {
+                    name: name,
+                    tld: tld,
+                    ip: 'https://goldencube.dev'
+                  })
+                  .then(function (response) {
+                    console.log(response);
+                      })
+                  .catch(function (error) {
+                    console.log(error);
+                  });
                 alert(`Registering domain: ${name} . ${tld}`);
             }
         });

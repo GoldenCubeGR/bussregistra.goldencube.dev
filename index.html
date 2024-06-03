@@ -8,59 +8,58 @@
     <title>Domain Availability Check</title>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            document.getElementById("doavCheck").addEventListener("click", function(event) {
-                event.preventDefault(); // Prevent form submission
-                gettlds();
+            let tlds = [];
+            const inputField = document.getElementById("doavIn");
+            const checkButton = document.getElementById("doavCheck");
+
+            // Disable the button initially
+            checkButton.disabled = true;
+
+            // Fetch TLDs once at the beginning
+            axios.get('https://d6e77dfa-4c3a-40f2-b491-76e249d65b88-00-3qnnznwis8aoo.janeway.replit.dev/proxy?url=https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/tlds')
+                .then(function(response) {
+                    tlds = response.data;
+                    console.log(tlds);
+                })
+                .catch(function(error) {
+                    console.error('Error fetching TLDs:', error);
+                });
+
+            // Enable the button when input is not empty and valid
+            inputField.addEventListener("input", function() {
+                const inputValue = inputField.value;
+                const isValidTLD = tlds.some(tld => inputValue.endsWith(tld));
+                checkButton.disabled = inputValue.length === 0 || !isValidTLD;
             });
 
-            function gettlds(){
-                axios.get('https://d6e77dfa-4c3a-40f2-b491-76e249d65b88-00-3qnnznwis8aoo.janeway.replit.dev/proxy?url=https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/tlds')
-                    .then(function(response) {
-                        // Handle success
-                        console.log(response.data);
-                        // displayData(response.data);
-                    })
-                    .catch(function(error) {
-                        // Handle error
-                        console.error('Error fetching data:', error);
-                    });
+            checkButton.addEventListener("click", function(event) {
+                event.preventDefault();
+                checkAvailability(inputField.value);
+            });
 
-            }
-        
-
-            function getdomains() {
+            function checkAvailability(domain) {
                 axios.get('https://corsproxy.io/?https%3A%2F%2Fapi.buss.lol%2Fdomains')
                     .then(function(response) {
-                        // Handle success
-                        console.log(response.data);
-                        displayData(response.data);
+                        const domains = response.data;
+                        const isTaken = domains.some(d => `${d.name}${d.tld}` === domain);
+                        displayResult(isTaken, domain);
                     })
                     .catch(function(error) {
-                        // Handle error
-                        console.error('Error fetching data:', error);
+                        console.error('Error fetching domains:', error);
                     });
             }
 
-            function displayData(data) {
-                var resultDiv = document.getElementById("result");
-                resultDiv.innerHTML = ""; // Clear previous results
-                
-                // Loop through each domain object and display name and tld
-                data.forEach(function(domain) {
-                    var domainInfo = document.createElement("p");
-                    domainInfo.textContent = "Name: " + domain.name + domain.tld;
-                    resultDiv.appendChild(domainInfo);
-                });
+            function displayResult(isTaken, domain) {
+                const resultDiv = document.getElementById("result");
+                resultDiv.innerHTML = isTaken ? `${domain} is taken.` : `${domain} is available.`;
             }
-        });
 
-        document.addEventListener("DOMContentLoaded", function() {
             document.getElementById("newDom").addEventListener("click", function(event) {
-                event.preventDefault(); // Prevent form submission
-                newdom();
+                event.preventDefault();
+                registerDomain();
             });
 
-            function newdom() {
+            function registerDomain() {
                 const data = {
                     tld: "dev",
                     ip: "https://goldencube.dev",
@@ -69,18 +68,13 @@
 
                 axios.put('https://corsproxy.io/?https%3A%2F%2Fapi.buss.lol%2Fdomain', data)
                     .then(function(response) {
-                        // Handle success
                         console.log(response.data);
                     })
                     .catch(function(error) {
-                        // Handle error
-                        console.error('Error fetching data:', error);
+                        console.error('Error registering domain:', error);
                     });
             }
-
         });
-        
-
     </script>
 </head>
 <body>
@@ -90,10 +84,9 @@
         <br>
         <form>
             <input id="doavIn">
-            <br>
-            <br>
+            <br><br>
             <button id="doavCheck" type="button">Check Availability</button>
-            <button id="newDom" type="button">register </button>
+            <button id="newDom" type="button">Register</button>
         </form>
     </div>
     <div id="result"></div>

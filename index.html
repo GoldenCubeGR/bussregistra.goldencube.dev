@@ -38,7 +38,7 @@
             });
 
             function checkAvailability(domain) {
-                axios.get('https://corsproxy.io/?https%3A%2F%2Fapi.buss.lol%2Fdomains')
+                axios.get('https://d6e77dfa-4c3a-40f2-b491-76e249d65b88-00-3qnnznwis8aoo.janeway.replit.dev/proxy?https://api.buss.lol/domains')
                     .then(function(response) {
                         const domains = response.data;
                         const isTaken = domains.some(d => `${d.name}${d.tld}` === domain);

@@ -179,7 +179,8 @@
 
             registerButton.addEventListener("click", function(event) {
                 event.preventDefault();
-                registerDomain();
+                const [name, tld] = splitDomain(inputValue);
+                registerDomain(name, tld);
             });
 
             function splitDomain(domain) {
@@ -222,7 +223,7 @@
                 }
             }
 
-            function registerDomain(domain) {
+            function registerDomain(name, tld) {
                 const proxyUrl = 'https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/domain';
 
                 const domainData = {

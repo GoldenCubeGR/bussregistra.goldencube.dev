@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     .then(function(response) {
                         // Handle success
                         console.log(response.data);
-                        displayData(response.data);
+                        // displayData(response.data);
                     })
                     .catch(function(error) {
                         // Handle error

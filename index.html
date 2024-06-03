@@ -4,9 +4,149 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domain Registration</title>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <title>Domain Availability Check</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            text-align: center;
+        }
+        input {
+            padding: 8px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 8px 16px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Domain Registration</h1>
+        <form>
+            <input id="doavIn" placeholder="Enter domain name">
+            <button id="doavCheck" type="button">Check Availability</button>
+            <button id="newDom" type="button">Register</button>
+        </form>
+        <div id="result"></div>
+    </div>
+    
+    <div id="myModal" class="modal">
+
+  <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <form>
+          <div>
+            <label for="email">Email</label>
+            <input type="email" id="email" required>
+          </div>
+          <div>
+            <label for="password">Password</label>
+            <input type="password" id="password" required>
+          </div>
+          <button type="submit">Sign up</button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-firestore.js"></script>
+
     <script>
+        
+        // Get the modal
+        var modal = document.getElementById("myModal");
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("myBtn");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // Firebase configuration
+        const firebaseConfig = {
+        apiKey: "AIzaSyBzmsk8JIOiY41iijIOhRfKnkJDJ2sXxJk",
+    	authDomain: "busswebxdomainregistra.firebaseapp.com",
+    	projectId: "busswebxdomainregistra",
+    	storageBucket: "busswebxdomainregistra.appspot.com",
+    	messagingSenderId: "612010771490",
+    	appId: "1:612010771490:web:3eee2fb3dc21c86649b67b",
+    	measurementId: "G-M3CMX21HTF"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        const db = firebase.firestore();
+
         document.addEventListener("DOMContentLoaded", function() {
             let tlds = [];
             const inputField = document.getElementById("doavIn");
@@ -20,7 +160,6 @@
             axios.get('https://d6e77dfa-4c3a-40f2-b491-76e249d65b88-00-3qnnznwis8aoo.janeway.replit.dev/proxy?url=https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/tlds')
                 .then(function(response) {
                     tlds = response.data;
-                    console.log(tlds);
                 })
                 .catch(function(error) {
                     console.error('Error fetching TLDs:', error);
@@ -75,53 +214,63 @@
             function displayResult(isAvailable, domain) {
                 const resultDiv = document.getElementById("result");
                 resultDiv.innerHTML = isAvailable ? `${domain} is Available.` : `${domain} is Unavailable.`;
+                if (isAvailable) {
+                    const registerButton = document.createElement("button");
+                    registerButton.textContent = "Register";
+                    registerButton.onclick = function() {
+                        registerDomain(domain);
+                    };
+                    resultDiv.appendChild(registerButton);
+                }
             }
 
-            function registerDomain() {
-                const proxyUrl = 'https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/domain';
+            function registerDomain(domain) {
+                modal.style.display = "block";
 
-                const domainData = {
-                  name: 'goldencube',
-                  tld: 'dev',
-                  ip: 'https://goldencube.dev'
-                };
+                span.onclick = function() {
+                modal.style.display = "none";
+                }
 
-                fetch(proxyUrl, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify(domainData)
-                    })
-                .then(response => {
-                  if (!response.ok) {
-                    throw new Error('Failed to create domain', Error);
+                // When the user clicks anywhere outside of the modal, close it
+                window.onclick = function(event) {
+                  if (event.target == modal) {
+                    modal.style.display = "none";
                   }
-                  return response.json();
-                })
-                .then(data => {
-                  console.log('Domain created successfully:', data);
-                })
-                .catch(error => {
-                  console.error('Error creating domain:', error);
-                });
+                }
+                var email = document.getElementById("email");
+var password = document.getElementById("password");
+var signInButton = document.getElementById("signInButton");
+var signUpButton = document.getElementById("signUpButton");
+
+// Add event listeners to the sign in and sign up buttons
+signInButton.addEventListener("click", function() {
+  // Sign in the user using Firebase's signInWithEmailAndPassword method
+  firebase.auth().signInWithEmailAndPassword(email.value, password.value)
+    .then(function() {
+      // Redirect the user to the protected resources page
+      window.location.href = "/protected-resources.html";
+    })
+    .catch(function(error) {
+      // Show an error message
+      alert(error.message);
+    });
+});
+
+signUpButton.addEventListener("click", function() {
+  // Sign up the user using Firebase's createUserWithEmailAndPassword method
+  firebase.auth().createUserWithEmailAndPassword(email.value, password.value)
+    .then(function() {
+      // Redirect the user to the protected resources page
+      window.location.href = "/protected-resources.html";
+    })
+    .catch(function(error) {
+      // Show an error message
+      alert(error.message);
+    });
+});
+                alert(`Registering domain: ${domain}`);
             }
         });
     </script>
-</head>
-<body>
-    <center>
-    <div id="doav">
-        <h1>Domain Availability Check</h1>
-        <br>
-        <form>
-            <input id="doavIn">
-            <br><br>
-            <button id="doavCheck" type="button">Check Availability</button>
-            <button id="newDom" type="button">Register</button>
-        </form>
-    </div>
-    <div id="result"></div>
-    </center>
 </body>
 </html>

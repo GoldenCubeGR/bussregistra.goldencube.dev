@@ -179,6 +179,7 @@
 
             registerButton.addEventListener("click", function(event) {
                 event.preventDefault();
+                const inputValue = inputField.value;
                 const [name, tld] = splitDomain(inputValue);
                 registerDomain(name, tld);
             });

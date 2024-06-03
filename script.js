@@ -1,10 +1,33 @@
 document.addEventListener("DOMContentLoaded", function() {
             document.getElementById("doavCheck").addEventListener("click", function(event) {
                 event.preventDefault(); // Prevent form submission
-                getdomains();
+                gettlds();
             });
 
+            function gettlds(){
 
+                try {
+                    const proxyUrl = 'https://d6e77dfa-4c3a-40f2-b491-76e249d65b88-00-3qnnznwis8aoo.janeway.replit.dev/proxy?url=';
+                    const targetUrl = 'https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/tlds';
+                    const response = await fetch(proxyUrl + encodeURIComponent(targetUrl), {
+                      method: 'GET',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      }
+                    });
+            
+                    if (response.ok) {
+                      const data = await response.json();
+                      console.log(data.join(', '));
+                    } else {
+                      const errorData = await response.json();
+                      console.log(`Error: ${errorData.message}`);
+                    }
+                  } catch (error) {
+                    console.log(`Error: ${error.message}`);
+                  }
+
+            }
         
 
             function getdomains() {
@@ -58,3 +81,5 @@ document.addEventListener("DOMContentLoaded", function() {
             }
 
         });
+        
+

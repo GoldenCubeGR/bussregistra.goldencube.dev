@@ -11,6 +11,7 @@
             let tlds = [];
             const inputField = document.getElementById("doavIn");
             const checkButton = document.getElementById("doavCheck");
+            const registerButton = document.getElementById("newDom");
 
             // Disable the button initially
             checkButton.disabled = true;
@@ -39,6 +40,11 @@
                 checkAvailability(name, tld);
             });
 
+            registerButton.addEventListener("click", function(event) {
+                event.preventDefault();
+                registerDomain();
+            });
+
             function splitDomain(domain) {
                 for (let tld of tlds) {
                     if (domain.endsWith(tld)) {
@@ -51,7 +57,7 @@
 
             function checkAvailability(name, tld) {
                 if (name && tld) {
-                    const url = `https://d6e77dfa-4c3a-40f2-b491-76e249d65b88-00-3qnnznwis8aoo.janeway.replit.dev/proxy?url=https://api.buss.lol/domain/${name}/${tld}`;
+                    const url = `https://d6e77dfa-4c3a-40f2-b491-76e249d65b88-00-3qnnznwis8aoo.janeway.replit.dev/proxy?url=https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/domain/${name}/${tld}`;
                     axios.get(url)
                         .then(function(response) {
                             displayResult(false, `${name}.${tld}`);
@@ -71,11 +77,6 @@
                 resultDiv.innerHTML = isAvailable ? `${domain} is Available.` : `${domain} is Unavailable.`;
             }
 
-            document.getElementById("newDom").addEventListener("click", function(event) {
-                event.preventDefault();
-                registerDomain();
-            });
-
             function registerDomain() {
                 const data = {
                     tld: "dev",
@@ -83,12 +84,14 @@
                     name: "goldencube"
                 };
 
-                axios.put('https://corsproxy.io/?https%3A%2F%2Fapi.buss.lol%2Fdomain', data)
+                axios.post('https://d6e77dfa-4c3a-40f2-b491-76e249d65b88-00-3qnnznwis8aoo.janeway.replit.dev/proxy?url=https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/domain', data)
                     .then(function(response) {
                         console.log(response.data);
+                        alert("Domain registered successfully!");
                     })
                     .catch(function(error) {
                         console.error('Error registering domain:', error);
+                        alert("Failed to register domain!");
                     });
             }
         });

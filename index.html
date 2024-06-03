@@ -78,21 +78,33 @@
             }
 
             function registerDomain() {
-                const data = {
-                    tld: "dev",
-                    ip: "https://goldencube.dev",
-                    name: "goldencube"
+                const proxyUrl = 'https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/domain';
+
+                const domainData = {
+                  name: 'goldencube',
+                  tld: 'dev',
+                  ip: 'https://goldencube.dev'
                 };
 
-                axios.post('https://d6e77dfa-4c3a-40f2-b491-76e249d65b88-00-3qnnznwis8aoo.janeway.replit.dev/proxy?url=https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/domain', data)
-                    .then(function(response) {
-                        console.log(response.data);
-                        alert("Domain registered successfully!");
+                fetch(proxyUrl, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(domainData)
                     })
-                    .catch(function(error) {
-                        console.error('Error registering domain:', error);
-                        alert("Failed to register domain!");
-                    });
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error('Failed to create domain', Error);
+                  }
+                  return response.json();
+                })
+                .then(data => {
+                  console.log('Domain created successfully:', data);
+                })
+                .catch(error => {
+                  console.error('Error creating domain:', error);
+                });
             }
         });
     </script>

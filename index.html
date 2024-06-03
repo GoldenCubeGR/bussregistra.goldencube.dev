@@ -34,19 +34,33 @@
 
             checkButton.addEventListener("click", function(event) {
                 event.preventDefault();
-                checkAvailability(inputField.value);
+                const inputValue = inputField.value;
+                const [name, tld] = splitDomain(inputValue);
+                checkAvailability(name, tld);
             });
 
-            function checkAvailability(domain) {
-                axios.get('https://d6e77dfa-4c3a-40f2-b491-76e249d65b88-00-3qnnznwis8aoo.janeway.replit.dev/proxy?url=https://api.buss.lol/domains')
-                    .then(function(response) {
-                        const domains = response.data;
-                        const isTaken = domains.some(d => `${d.name}${d.tld}` === domain);
-                        displayResult(isTaken, domain);
-                    })
-                    .catch(function(error) {
-                        console.error('Error fetching domains:', error);
-                    });
+            function splitDomain(domain) {
+                for (let tld of tlds) {
+                    if (domain.endsWith(tld)) {
+                        const name = domain.slice(0, domain.length - tld.length);
+                        return [name, tld];
+                    }
+                }
+                return [domain, '']; // Default return if no TLD is found
+            }
+
+            function checkAvailability(name, tld) {
+                if (name && tld) {
+                    const url = `https://d6e77dfa-4c3a-40f2-b491-76e249d65b88-00-3qnnznwis8aoo.janeway.replit.dev/proxy?url=https://api.buss.lol/domain/${name}/${tld}`;
+                    axios.get(url)
+                        .then(function(response) {
+                            const isTaken = response.data.exists;
+                            displayResult(isTaken, `${name}${tld}`);
+                        })
+                        .catch(function(error) {
+                            console.error('Error checking domain availability:', error);
+                        });
+                }
             }
 
             function displayResult(isTaken, domain) {

@@ -226,7 +226,8 @@
 
             function registerDomain(name, tld) {
                 const proxyUrl = 'https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/domain';
-
+                tld = tld.replace(/\./g, "");
+                console.log(name, "" , tld)
                 const domainData = {
                   name: name,
                   tld: tld,

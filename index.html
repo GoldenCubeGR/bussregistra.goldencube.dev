@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible"="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Domain Registration</title>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -13,6 +13,7 @@
             margin: 0;
             padding: 0;
         }
+
         .container {
             max-width: 600px;
             margin: 50px auto;
@@ -21,19 +22,31 @@
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
+	.borderdiv {
+	    border-style: inset;
+	    border-radius: 5px;
+	}
+	div {
+            text-align: center;
+            color: #333;
+        }
+
         h1 {
             text-align: center;
             color: #333;
         }
+
         form {
             text-align: center;
         }
+
         input {
             padding: 8px;
             width: 200px;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+
         button {
             padding: 8px 16px;
             margin-left: 10px;
@@ -41,47 +54,71 @@
             border-radius: 4px;
             cursor: pointer;
         }
+
         #result {
             margin-top: 20px;
             text-align: center;
         }
+
         .modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
 
-/* Modal Content */
-.modal-content {
-  background-color: #fefefe;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-}
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
 
-/* The Close Button */
-.close {
-  color: #aaaaaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
 
-.close:hover,
-.close:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-}
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #alternativeTlds {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #alternativeTlds h3 {
+            margin-bottom: 10px;
+        }
+
+        .available-domain {
+            display: inline-block;
+            margin: 5px;
+            padding: 10px;
+            border: 2px solid #4CAF50;
+            border-radius: 50%;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .available-domain:hover {
+            background-color: #4CAF50;
+            color: #fff;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -90,72 +127,66 @@
         <form>
             <input id="doavIn" placeholder="Enter domain name">
             <button id="doavCheck" type="button">Check Availability</button>
-            <button id="newDom" type="button">Register</button>
+            <h3 id="secretres"></h3>
         </form>
-        <div id="result"></div>
+        <div id="result" class=available-domain"></div>
+        <div id="alternativeTlds"></div>
     </div>
-    
+    <div class="container">
+        <h1>Domain Deleter</h1>
+        <form>
+            <input id="secretIn" placeholder="Enter domain key">
+            <button id="domDel" type="button" disabled>Delete Domain</button>
+        </form>
+        <div id="Delresult" ></div>
+    </div>
+
     <div id="myModal" class="modal">
-
-  <!-- Modal content -->
-      <div class="modal-content">
-        <span class="close">&times;</span>
-          <div>
-            <label for="email">Email</label>
-            <input type="email" id="email" required>
-          </div>
-          <div>
-            <label for="password">Password</label>
-            <input type="password" id="password" required>
-          </div>
-          <button type="submit">Sign up</button>
-      </div>
-
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div>
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit">Sign up</button>
+        </div>
     </div>
 
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-firestore.js"></script>
 
     <script>
-        
-        // Get the modal
         var modal = document.getElementById("myModal");
-
-        // Get the button that opens the modal
-        var btn = document.getElementById("myBtn");
-
-        // Get the <span> element that closes the modal
         var span = document.getElementsByClassName("close")[0];
 
-        // Firebase configuration
         const firebaseConfig = {
-        apiKey: "AIzaSyBzmsk8JIOiY41iijIOhRfKnkJDJ2sXxJk",
-    	authDomain: "busswebxdomainregistra.firebaseapp.com",
-    	projectId: "busswebxdomainregistra",
-    	storageBucket: "busswebxdomainregistra.appspot.com",
-    	messagingSenderId: "612010771490",
-    	appId: "1:612010771490:web:3eee2fb3dc21c86649b67b",
-    	measurementId: "G-M3CMX21HTF"
+            apiKey: "AIzaSyBzmsk8JIOiY41iijIOhRfKnkJDJ2sXxJk",
+            authDomain: "busswebxdomainregistra.firebaseapp.com",
+            projectId: "busswebxdomainregistra",
+            storageBucket: "busswebxdomainregistra.appspot.com",
+            messagingSenderId: "612010771490",
+            appId: "1:612010771490:web:3eee2fb3dc21c86649b67b",
+            measurementId: "G-M3CMX21HTF"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-
         const db = firebase.firestore();
 
         document.addEventListener("DOMContentLoaded", function() {
             let tlds = [];
             const inputField = document.getElementById("doavIn");
             const checkButton = document.getElementById("doavCheck");
-            const registerButton = document.getElementById("newDom");
+            const deleteButton = document.getElementById("domDel");
+            const secretInput = document.getElementById("secretIn");
 
-            // Disable the button initially
             checkButton.disabled = true;
 
-            // Fetch TLDs once at the beginning
-            axios.get('https://d6e77dfa-4c3a-40f2-b491-76e249d65b88-00-3qnnznwis8aoo.janeway.replit.dev/proxy?url=https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/tlds')
+            axios.get('https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/tlds')
                 .then(function(response) {
                     tlds = response.data;
                 })
@@ -163,11 +194,15 @@
                     console.error('Error fetching TLDs:', error);
                 });
 
-            // Enable the button when input is not empty and valid
             inputField.addEventListener("input", function() {
                 const inputValue = inputField.value;
                 const isValidTLD = tlds.some(tld => inputValue.endsWith(tld));
                 checkButton.disabled = inputValue.length === 0 || !isValidTLD;
+            });
+
+            secretInput.addEventListener("input", function() {
+                const secretValue = secretInput.value;
+                deleteButton.disabled = secretValue.length !== 24;
             });
 
             checkButton.addEventListener("click", function(event) {
@@ -177,11 +212,10 @@
                 checkAvailability(name, tld);
             });
 
-            registerButton.addEventListener("click", function(event) {
+            deleteButton.addEventListener("click", function(event) {
                 event.preventDefault();
-                const inputValue = inputField.value;
-                const [name, tld] = splitDomain(inputValue);
-                registerDomain(name, tld);
+                const secret = secretInput.value;
+                deleteDomain(secret);
             });
 
             function splitDomain(domain) {
@@ -191,15 +225,20 @@
                         return [name, tld];
                     }
                 }
-                return [domain.replace(/\./g, ''), '']; // Default return if no TLD is found
+                return [domain.replace(/\./g, ''), ''];
             }
 
             function checkAvailability(name, tld) {
+		const secretres = document.getElementById("secretres");
+		secretres.innerText = "";
+		const alternativeTldsDiv = document.getElementById("alternativeTlds");
+                alternativeTldsDiv.innerHTML = '<h3></h3>';
                 if (name && tld) {
-                    const url = `https://d6e77dfa-4c3a-40f2-b491-76e249d65b88-00-3qnnznwis8aoo.janeway.replit.dev/proxy?url=https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/domain/${name}/${tld}`;
+                    const url = `https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/domain/${name}/${tld}`;
                     axios.get(url)
                         .then(function(response) {
                             displayResult(false, `${name}.${tld}`);
+                            displayAlternativeTLDs(name);
                         })
                         .catch(function(error) {
                             if (error.response && error.response.status === 404) {
@@ -218,34 +257,84 @@
                     const registerButton = document.createElement("button");
                     registerButton.textContent = "Register";
                     registerButton.onclick = function() {
-                        registerDomain(domain);
+                        registerButton.remove();
+                        const [name, tld] = splitDomain(domain);
+                        registerDomain(name, tld);
                     };
                     resultDiv.appendChild(registerButton);
                 }
             }
 
+            function displayAlternativeTLDs(name) {
+                const alternativeTldsDiv = document.getElementById("alternativeTlds");
+                alternativeTldsDiv.innerHTML = '<h3>But These Domains Are Available</h3>';
+                tlds.forEach(tld => {
+                    const url = `https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/domain/${name}/${tld}`;
+                    axios.get(url)
+                        .then(function(response) {
+                            // Domain is unavailable, do nothing
+                        })
+                        .catch(function(error) {
+                            if (error.response && error.response.status === 404) {
+                                // Domain is available
+                                const domain = `${name}.${tld}`;
+                                const div = document.createElement("div");
+                                div.innerHTML = `${domain} is Available. <button onclick="registerDomain('${name}', '${tld}')">Register</button>`;
+                                alternativeTldsDiv.appendChild(div);
+                            }
+                        });
+                });
+            }
+
             function registerDomain(name, tld) {
                 const proxyUrl = 'https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/domain';
-                tld = tld.replace(/\./g, "");
-                console.log(name, "" , tld)
                 const domainData = {
-                  name: name,
-                  tld: tld,
-                  ip: 'https://goldencube.dev'
-                };
-
-                axios.post(proxyUrl, {
                     name: name,
                     tld: tld,
                     ip: 'https://goldencube.dev'
-                  })
-                  .then(function (response) {
-                    console.log(response);
-                      })
-                  .catch(function (error) {
-                    console.log(error);
-                  });
-                alert(`Registering domain: ${name} . ${tld}`);
+                };
+
+                axios.post(proxyUrl, domainData)
+                    .then(function(response) {
+                        const resultDiv = document.getElementById("result");
+                        const secretres = document.getElementById("secretres");
+                        const msg = `${name}.${tld} Registered Successfully`;
+                        console.log(msg);
+                        resultDiv.innerText = msg;
+			const secretmsg = `Domain Key: ${response.data.secret_key} (⚠️ Dont Loose ⚠️)`
+			console.log(secretmsg);
+                        secretres.innerText = secretmsg;  // Update this line to set the secret key
+			clipboard.writeText(response.data.secret_key);
+			// const copyBtn = document.createElement("button");
+			// copyBtn.textContent = "Copy Key";
+                    	// copyBtn.onclick = function() {
+				// response.data.secret_key.select()
+                    	// };
+                        console.log(response.data);
+                    })
+                    .catch(function(error) {
+			const resultDiv = document.getElementById("result");
+			resultDiv.innerText = error.response.data;
+                        console.log(error);
+                    });
+                alert(`Registering domain: ${name}.${tld}`);
+            }
+
+            function deleteDomain(secret) {
+                const proxyUrl = 'https://adb43735-75a8-47aa-b925-34b708f28417-00-9ctzp3r03jmx.spock.replit.dev/domain/';
+		const finishUrl = proxyUrl + secret;
+		console.log(finishUrl);
+                axios.delete(finishUrl)
+                    .then(function(response) {
+                        const resultDiv = document.getElementById("Delresult");
+                        const msg = "Domain Deleted Successfully";
+                        console.log(msg);
+                        resultDiv.innerText = msg;
+                        console.log(response);
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    });
             }
         });
     </script>
